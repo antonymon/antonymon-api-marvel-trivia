@@ -1,0 +1,21 @@
+version: "3.3"
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=marvel_trivia_db
+      - POSTGRES_USER=ingenio_union
+      - POSTGRES_PASSWORD=reto992022
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=ingenio_union@dominio.com
+      - PGADMIN_DEFAULT_PASSWORD=reto992023
+    ports:
+      - 5050:80
