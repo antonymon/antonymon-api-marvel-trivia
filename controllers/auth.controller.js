@@ -32,6 +32,17 @@ export function signup(req, res) {
     libs.utils.getLog()
         .debug(infoLog, 'signup: Iniciando método POST.');
 
+    if (config.server.NODE_APP_SINGUP_REGISTER_ADMIN.toLocaleLowerCase() === 'false') {
+        if (req.body.roles.includes("admin") || req.body.roles.includes("moderator")) {
+            infoLog.responseCode = 400;
+            infoLog.responseTime = libs.utils.getResponseTime(startTime);
+            libs.utils.getLog().error(infoLog, `signup: Error rol not permitted.`);
+
+            const resObj = libs.utils.errorParse(400, `signup: Error rol not permitted.`);
+            res.status(resObj.errorCode).send(resObj);
+            return;
+        }
+    }
 
     User.create({
         username: req.body.username,
@@ -57,7 +68,6 @@ export function signup(req, res) {
                     });
                 });
             } else {
-                // user role = 1
                 user.setRoles([1]).then(() => {
                     infoLog.responseCode = 200;
                     infoLog.responseTime = libs.utils.getResponseTime(startTime);

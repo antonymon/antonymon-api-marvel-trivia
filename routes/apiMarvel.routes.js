@@ -1,5 +1,6 @@
 import express from 'express';
 import controllers from '../controllers/index.js';
+import { verifyToken, isModerator, isAdmin } from '../middlewares/authJwt.js';
 
 const router = express.Router();
 
@@ -13,10 +14,28 @@ router.use(function (req, res, next) {
 });
 
 
-router.get("/comics/:comicId", controllers.apiMarvel.comics);
-router.get("/comicList/:pageNum", controllers.apiMarvel.comicList);
+router.get(
+    "/comics/:comicId",
+    [verifyToken],
+    controllers.apiMarvel.comics
+);
 
-router.get("/characters/:charactersId", controllers.apiMarvel.characters);
-router.get("/search/:searchType/:searchTerm", controllers.apiMarvel.search);
+router.get(
+    "/comicList/:pageNum",
+    [verifyToken],
+    controllers.apiMarvel.comicList
+);
+
+router.get(
+    "/characters/:charactersId",
+    [verifyToken],
+    controllers.apiMarvel.characters
+);
+
+router.get(
+    "/search/:searchType/:searchTerm",
+    [verifyToken],
+    controllers.apiMarvel.search
+);
 
 export default router;
