@@ -40,17 +40,16 @@ const dataValuesLog = new database.log();
 // eslint-disable-next-line no-unused-vars
 const { id, ...Log } = dataValuesLog;
 
-const Role = database.role;
-const User = database.user;
-
-database.sequelize.sync({ force: true }).then(() => {
-  libs.utils.getLog().info(Log, `Drop and Resync DB`);
-  libs.initialData.dataRole(Role);
-  libs.initialData.dataUser(User, Role, database.Sequelize.Op);
-})
+//const Role = database.role;
+//const User = database.user;
+//database.sequelize.sync({ force: true }).then(() => {
+//  libs.utils.getLog().info(Log, `Drop and Resync DB`);
+//  libs.initialData.dataRole(Role);
+//  libs.initialData.dataUser(User, Role, database.Sequelize.Op);
+//})
 
 //production
-//database.sequelize.sync();
+database.sequelize.sync();
 
 
 routerApi(app);
