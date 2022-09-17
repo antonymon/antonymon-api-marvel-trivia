@@ -5,6 +5,10 @@ import config from '../config/index.js';
 import user from './user.model.js';
 import role from './role.model.js';
 
+import comic from './comic.model.js';
+import character from './character.model.js';
+import cuestion from './cuestion.model.js';
+
 import log from './log.model.js';
 import error from './error.model.js';
 
@@ -31,6 +35,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+//user
 db.user = user(sequelize, Sequelize);
 db.role = role(sequelize, Sequelize);
 
@@ -50,5 +55,14 @@ db.user.belongsToMany(db.role, {
 });
 
 db.ROLES = ["user", "moderator", "admin"];
+
+//user
+
+//cuestion
+
+db.comic = comic(sequelize, Sequelize);
+db.character = character(sequelize, Sequelize);
+db.cuestion = cuestion(sequelize, Sequelize);
+//cuestion
 
 export default db;
