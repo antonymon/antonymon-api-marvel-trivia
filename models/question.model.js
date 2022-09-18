@@ -1,5 +1,5 @@
 export default (sequelize, Sequelize) => {
-    const Question = sequelize.define("cuestion", {
+    const Question = sequelize.define("question", {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,

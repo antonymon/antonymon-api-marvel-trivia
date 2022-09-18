@@ -167,7 +167,7 @@ export function putQuestion(req, res) {
     libs.utils.getLog()
         .debug(infoLog, "putQuestions: Iniciando método PUT.");
 
-    const { idQuestion } = req.params;
+    const idQuestion = req.params.id;
 
     Question.update({
         typeQuestion: req.body.typeQuestion,
@@ -215,19 +215,28 @@ export function deleteQuestion(req, res) {
     libs.utils.getLog()
         .debug(infoLog, "deleteQuestions: Iniciando método DELETE.");
 
-    const { idQuestion } = req.params;
+    const idQuestion = req.params.id;
 
     Question.destroy({
         where: {
             id: idQuestion
         }
     })
-        .then(() => {
-            infoLog.responseCode = 200;
-            infoLog.responseTime = libs.utils.getResponseTime(startTime);
-            libs.utils.getLog().info(infoLog, "deleteQuestions: Pregunta eliminada.");
+        .then((result) => {
+            if (result === 1) {
+                infoLog.responseCode = 200;
+                infoLog.responseTime = libs.utils.getResponseTime(startTime);
+                libs.utils.getLog().info(infoLog, "deleteQuestions: Pregunta eliminada.");
 
-            res.status(200).send("Pregunta eliminada.");
+                res.status(200).send("Pregunta eliminada.");
+            } else {
+                infoLog.responseCode = 404;
+                infoLog.responseTime = libs.utils.getResponseTime(startTime);
+                libs.utils.getLog().error(infoLog, "deleteQuestions: Pregunta no encontrada.");
+
+                const resObj = libs.utils.errorParse(404, "deleteQuestions: Pregunta no encontrada.");
+                res.status(resObj.errorCode).send(resObj);
+            }
         })
         .catch(err => {
             infoLog.responseCode = 400;
