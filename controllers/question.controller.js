@@ -3,6 +3,8 @@ import libs from '../libs/index.js'
 import moment from "moment";
 
 const Question = database.question;
+const Comic = database.comic;
+const Character = database.character;
 
 let startTime;
 
@@ -137,6 +139,58 @@ export function postQuestion(req, res) {
             infoLog.responseCode = 200;
             infoLog.responseTime = libs.utils.getResponseTime(startTime);
             libs.utils.getLog().info(infoLog, "postQuestions: Pregunta creada.");
+
+            //creo comic y personaje
+
+            Comic.findAll({
+                where: {
+                    id: req.body.comicId
+                }
+            })
+                .then(comics => {
+                    if (comics.length === 0) {
+                        Comic.create({
+                            id: req.body.comic.id,
+                            title: req.body.comic.title,
+                            description: req.body.comic.description,
+                            thumbnail: req.body.comic.thumbnail,
+                        })
+                            .then(comic => {
+                                Character.findAll({
+                                    where: {
+                                        id: req.body.characterId
+                                    }
+                                })
+                                    .then(characters => {
+                                        if (characters.length === 0) {
+                                            Character.create({
+                                                id: req.body.character.id,
+                                                title: req.body.character.title,
+                                                description: req.body.character.description,
+                                                thumbnail: req.body.character.thumbnail,
+                                            })
+                                                .then(character => {
+                                                    // eslint-disable-next-line no-console
+                                                    console.log("comic y personaje creados," + comic + character);
+                                                })
+                                                .catch(err => {
+                                                    // eslint-disable-next-line no-console
+                                                    console.log("error al crear personaje, " + err);
+                                                });
+                                        }
+                                    })
+                            })
+                            .catch(err => {
+                                // eslint-disable-next-line no-console
+                                console.log("error al crear comic," + err);
+                            });
+                    }
+                })
+                .catch(err => {
+                    // eslint-disable-next-line no-console
+                    console.log("error al buscar comic," + err);
+                });
+            //
 
             res.status(200).send(question);
         })

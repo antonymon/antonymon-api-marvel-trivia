@@ -1,7 +1,7 @@
 export default (sequelize, Sequelize) => {
     const Comic = sequelize.define("comic", {
         id: {
-            type: Sequelize.STRING,
+            type: Sequelize.INTEGER,
             primaryKey: true,
             notNull: true
         },
@@ -12,9 +12,6 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         thumbnail: {
-            type: Sequelize.STRING
-        },
-        characters: {
             type: Sequelize.STRING
         }
     });

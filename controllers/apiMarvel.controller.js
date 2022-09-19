@@ -206,8 +206,55 @@ export function characters(req, res) {
             infoLog.responseTime = libs.utils.getResponseTime(startTime);
             libs.utils.getLog().info(infoLog, 'characters: Responde exitosamente.');
 
-            res.status(200).send(data);
-            return;
+
+            //valida si el personaje existe y si existe valida si tiene preguntas
+            const comicId = req.query.idComic;
+
+            const Question = database.question;
+
+            Question.findAll({
+                where: {
+                    comicId: comicId
+                }
+            })
+                .then((questions) => {
+                    if (questions.length <= 0) {
+                        data.data.results[0].questions = false;
+                        res.status(200).send(data);
+                        return;
+                    } else {
+                        Question.findAll({
+                            where: {
+                                comicId: comicId,
+                                characterId: charactersId
+                            }
+                        })
+                            .then((questions) => {
+                                if (questions.length <= 0) {
+                                    data.data.results[0].questions = false;
+                                } else {
+                                    data.data.results[0].questions = true;
+                                }
+                                res.status(200).send(data);
+                                return;
+                            })
+                            // eslint-disable-next-line no-unused-vars
+                            .catch((e) => {
+                                data.data.results[0].questions = false;
+                                res.status(200).send(data);
+                            })
+                    }
+                })
+                .catch((e) => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                    data.data.results[0].questions = false;
+                    res.status(200).send(data);
+                    return;
+                })
+            //
+            // res.status(200).send(data);
+            //return;
         })
         .catch((e) => {
             try {

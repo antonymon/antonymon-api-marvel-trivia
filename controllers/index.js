@@ -7,7 +7,7 @@ import {
     postQuestion,
     putQuestion,
     deleteQuestion
-} from "./cuestion.controller.js";
+} from "./question.controller.js";
 
 const controllers = {
     auth: {

@@ -1,7 +1,7 @@
 export default (sequelize, Sequelize) => {
     const Character = sequelize.define("character", {
         id: {
-            type: Sequelize.STRING,
+            type: Sequelize.INTEGER,
             primaryKey: true,
             notNull: true
         },
