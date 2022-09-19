@@ -9,5 +9,5 @@ export const requestSchema = new Schema(Request, {
     data: { type: 'string' }
   })
 
-export const requestRepository = client.fetchRepository(personSchema)
-await personRepository.createIndex()
+export const requestRepository = client.fetchRepository(requestSchema)
+await requestRepository.createIndex()

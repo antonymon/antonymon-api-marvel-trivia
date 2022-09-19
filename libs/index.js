@@ -1,6 +1,7 @@
 import { getLog, getClientIP, getResponseTime, errorHandler, errorParse, error, error503, error404 } from './utils.js'
 import { dataRole, dataUser } from './initial.data.js'
-import { requestRepository } from './redis.js' 
+import { connection } from './redis.js' 
+import { requestRepository } from './redis.model.js'
 
 const libs = {
     utils: {
@@ -18,6 +19,7 @@ const libs = {
         dataUser
     },
     redis: {
+        connection,
         requestRepository
     }
 }

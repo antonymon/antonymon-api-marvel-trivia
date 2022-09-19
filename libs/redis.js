@@ -1,19 +1,12 @@
-import { Entity, Schema } from 'redis-om'
-import { Client } from 'redis-om'
-
+import { createClient } from 'redis'
 import config from '../config/index.js';
 
 
 const url = config.server.NODE_REDIS_URL;
-const client = await new Client().open(url);
 
-class Request extends Entity {}
+export const connection = createClient({ url })
+await connection.connect()
 
-const requestSchema = new Schema(Request, {
-    path: { type: 'string' },
-    data: { type: 'string' }
-  })
+const client = await new Client().use(connection)
 
-export const requestRepository = client.fetchRepository(requestSchema)
-
-await requestRepository.createIndex()
+export default client
