@@ -5,9 +5,8 @@ import config from '../config/index.js';
 
 const url = config.server.NODE_REDIS_URL;
 
-export const connection = createClient({ url })
-await connection.connect()
+const connection = new Client();
 
-const client = await new Client().use(connection)
+await new connection.open(ur);
 
-export default client
+export { connection }
