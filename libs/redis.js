@@ -4,11 +4,8 @@ import { Client } from 'redis-om'
 import config from '../config/index.js';
 
 
-const client = async() => {
-  const url = config.server.NODE_REDIS_URL;
-  const _client = await new Client().open(url);
-  return _client;
-}
+const url = config.server.NODE_REDIS_URL;
+const client = await new Client().open(url);
 
 class Request extends Entity {}
 
