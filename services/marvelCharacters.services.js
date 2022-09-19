@@ -2,10 +2,28 @@ import axios from "axios";
 import md5 from 'blueimp-md5'
 import config from '../config/index.js';
 
-export async function marvelCharacters(charactersId) {
+import { validateExistRedis, createDataRedis} from './redis.tools.js';
+
+export async function marvelCharacters(charactersId, req) {
     try {
+        //redis
+        const validateRedis = validateExistRedis(req.originalUrl ?? '');
+        if(validateRedis) {
+            return JSON.parse(validateRedis.data);
+        }
+        //
+
         const url = generateUrlDianamic(charactersId);
         const { data } = await axios.get(url);
+
+        //redis
+        const request = {
+            path: req.originalUrl,
+            data: JSON.stringify(data)
+        }
+        createDataRedis(request);
+        //
+
         return data;
     } catch (e) {
         throw new Error(JSON.stringify(e));

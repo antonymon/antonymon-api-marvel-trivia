@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 const auth = {
-    SECRET: "api-marvel-trivia-secret-key"
+    SECRET: process.env.SECRET
 }
 
 export default auth;
