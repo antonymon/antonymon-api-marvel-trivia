@@ -3,10 +3,12 @@ import { Client } from 'redis-om'
 
 import config from '../config/index.js';
 
-const url = config.server.NODE_REDIS_URL
 
-const client = await new Client().open(url)
-
+const client = () => {
+  const url = config.server.NODE_REDIS_URL;
+  const client = await new Client().open(url);
+  return client;
+}
 
 class Request extends Entity {}
 
@@ -15,5 +17,6 @@ const requestSchema = new Schema(Request, {
     data: { type: 'string' }
   })
 
-export const requestRepository = client.fetchRepository(requestSchema)
+export const requestRepository = () => client.fetchRepository(requestSchema)
+
 await requestRepository.createIndex()

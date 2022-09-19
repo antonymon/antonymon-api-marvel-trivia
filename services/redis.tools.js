@@ -1,4 +1,5 @@
-
+import libs from '../libs/index.js';
+ 
 export const validateExistRedis = async(path) =>{
     try {
         const data = await libs.redis.requestRepository.search()
