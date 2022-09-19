@@ -6,8 +6,8 @@ import config from '../config/index.js';
 
 const client = () => {
   const url = config.server.NODE_REDIS_URL;
-  const client = await new Client().open(url);
-  return client;
+  const _client = await new Client().open(url);
+  return _client;
 }
 
 class Request extends Entity {}
