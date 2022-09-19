@@ -1,3 +1,4 @@
+import { Client } from 'redis-om'
 import { createClient } from 'redis'
 import config from '../config/index.js';
 
