@@ -6,7 +6,10 @@ import {
     getQuestionFindByComicAndCharacter,
     postQuestion,
     putQuestion,
-    deleteQuestion
+    deleteQuestion,
+    getQuestionFinByComicAndCharacterDinamic,
+    postQuestionPoints,
+    getQuestionPoints,
 } from "./question.controller.js";
 
 const controllers = {
@@ -31,7 +34,10 @@ const controllers = {
         getQuestionFindByComicAndCharacter,
         postQuestion,
         putQuestion,
-        deleteQuestion
+        deleteQuestion,
+        getQuestionFinByComicAndCharacterDinamic,
+        postQuestionPoints,
+        getQuestionPoints
     }
 }
 

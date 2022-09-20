@@ -42,4 +42,22 @@ router.delete(
     controllers.question.deleteQuestion
 );
 
+router.get(
+    "/questions/play/:comicId/:characters",
+    [verifyToken],
+    controllers.question.getQuestionFinByComicAndCharacterDinamic
+);
+
+router.post(
+    "/questions/play/points",
+    [verifyToken],
+    controllers.question.postQuestionPoints
+);
+
+router.post(
+    "/questions/play/points/:email",
+    [verifyToken],
+    controllers.question.getQuestionPoints
+);
+
 export default router;

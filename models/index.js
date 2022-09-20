@@ -8,6 +8,8 @@ import role from './role.model.js';
 import comic from './comic.model.js';
 import character from './character.model.js';
 import question from './question.model.js';
+import points from './points.model.js';
+
 
 import log from './log.model.js';
 import error from './error.model.js';
@@ -63,6 +65,7 @@ db.ROLES = ["user", "moderator", "admin"];
 db.comic = comic(sequelize, Sequelize);
 db.character = character(sequelize, Sequelize);
 db.question = question(sequelize, Sequelize);
+db.points = points(sequelize, Sequelize);
 //cuestion
 
 export default db;

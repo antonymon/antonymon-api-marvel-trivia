@@ -21,7 +21,7 @@ export function comics(req, res) {
     let { id, ...infoLog } = dataValues;
 
     const comicId = req.params.comicId;
-    sevices.marvelComics(comicId)
+    sevices.marvelComics(comicId, req)
         .then((data) => {
             infoLog.responseCode = 200;
             infoLog.responseTime = libs.utils.getResponseTime(startTime);
@@ -75,7 +75,7 @@ export function comicList(req, res) {
     let { id, ...infoLog } = dataValues;
 
     const pageNum = req.params.pageNum;
-    sevices.marvelComicList(pageNum)
+    sevices.marvelComicList(pageNum, req)
         .then((data) => {
             infoLog.responseCode = 200;
             infoLog.responseTime = libs.utils.getResponseTime(startTime);
@@ -147,7 +147,7 @@ export function search(req, res) {
     const searchType = req.params.searchType;
     const searchTerm = req.params.searchTerm;
 
-    sevices.marvelSearch(searchType, searchTerm)
+    sevices.marvelSearch(searchType, searchTerm, req)
         .then((data) => {
             infoLog.responseCode = 200;
             infoLog.responseTime = libs.utils.getResponseTime(startTime);
@@ -201,7 +201,7 @@ export function characters(req, res) {
     let { id, ...infoLog } = dataValues;
 
     const charactersId = req.params.charactersId;
-    sevices.marvelCharacters(charactersId)
+    sevices.marvelCharacters(charactersId, req)
         .then((data) => {
             infoLog.responseCode = 200;
             infoLog.responseTime = libs.utils.getResponseTime(startTime);
