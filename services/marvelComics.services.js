@@ -2,28 +2,34 @@ import axios from "axios";
 import md5 from 'blueimp-md5'
 import config from '../config/index.js';
 
-import { validateExistRedis, createDataRedis} from './redis.tools.js';
+import { validateExistRedis, createDataRedis } from './redis.tools.js';
 
 export async function marvelComics(comicId, req) {
     try {
 
-        //redis
-        const validateRedis = validateExistRedis(req.originalUrl ?? '');
-        if(validateRedis) {
-            return JSON.parse(validateRedis.data);
+        if (config.server.NODE_REDIS_USE === 'true') {
+            //redis
+            const path = req.originalUrl || '';
+            const validateRedis = await validateExistRedis(path);
+            if (validateRedis.length > 0) {
+                const dataRedis = JSON.parse(validateRedis[validateRedis.length - 1].entityData.data);
+                return dataRedis;
+            }
+            //
         }
-        //
 
         const url = generateUrlDianamic(comicId);
         const { data } = await axios.get(url);
 
-         //redis
-         const request = {
-            path: req.originalUrl,
-            data: JSON.stringify(data)
+        if (config.server.NODE_REDIS_USE === 'true') {
+            //redis
+            const request = {
+                path: req.originalUrl,
+                data: JSON.stringify(data)
+            }
+            await createDataRedis(request);
+            //
         }
-        createDataRedis(request);
-        //
 
         return data;
     } catch (e) {

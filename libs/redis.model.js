@@ -1,17 +1,13 @@
 
 import { Entity, Schema } from 'redis-om'
-import { connection } from './redis.js'
+import client from './redis.client.js'
 
-class Request extends Entity {}
+class Request extends Entity { }
 
 export const requestSchema = new Schema(Request, {
-    path: { type: 'string' },
-    data: { type: 'string' }
-  }, {
-    dataStructure: 'HASH'
-  });
+  path: { type: 'string' },
+  data: { type: 'string' }
+});
 
-const requestRepository = connection.fetchRepository(requestSchema);
+export const requestRepository = client.fetchRepository(requestSchema);
 await requestRepository.createIndex();
-
-export { requestRepository }
