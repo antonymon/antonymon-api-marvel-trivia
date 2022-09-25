@@ -54,10 +54,15 @@ router.post(
     controllers.question.postQuestionPoints
 );
 
-router.post(
-    "/questions/play/points/:email",
-    [verifyToken],
+router.get(
+    "/questions/pointsAll",
     controllers.question.getQuestionPoints
 );
+
+// router.get(
+//     "/questions/play/points/:email",
+//     [verifyToken],
+//     controllers.question.getQuestionPointsByUser
+// );
 
 export default router;

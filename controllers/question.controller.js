@@ -424,7 +424,7 @@ export function postQuestionPoints(req, res) {
         });
 }
 
-export function getQuestionPoints(req, res) {
+export async function getQuestionPoints(req, res) {
     startTime = moment(new Date());
 
     let dataValuesLog = new database.log({
@@ -441,35 +441,100 @@ export function getQuestionPoints(req, res) {
     libs.utils.getLog()
         .debug(infoLog, "getQuestionPoint: Iniciando método GET.");
 
+    try {
+        const points = await Points.findAll({
+            attributes: [
+                "email",
+                [Sequelize.fn("max", Sequelize.col("points")), "points"]
+            ],
+            group: ["email"],
+            order: [[Sequelize.fn("max", Sequelize.col("points")), "DESC"]]
+        });
+
+        if (points.length === 0) {
+            infoLog.responseCode = 404;
+            infoLog.responseTime = libs.utils.getResponseTime(startTime);
+            libs.utils.getLog().error(infoLog, "getQuestionPoint: Puntos no encontrados.");
+            const resObj = libs.utils.errorParse(404, "getQuestionPoint: Puntos no encontrados.");
+            res.status(resObj.errorCode).send(resObj);
+        } else {
+            let pointsArray = [];
+            for (let i = 0; i < points.length; i++) {
+                let point = await Points.findOne({
+                    where: {
+                        email: points[i].email,
+                        points: points[i].points
+                    },
+                    order: [["createdAt", "DESC"]]
+                });
+                if (point) {
+                    pointsArray.push(point);
+                }
+            }
+
+            infoLog.responseCode = 200;
+            infoLog.responseTime = libs.utils.getResponseTime(startTime);
+            libs.utils.getLog().info(infoLog, "getQuestionPoint: Puntos encontrados.");
+            res.status(200).send(pointsArray);
+        }
+    } catch (err) {
+        infoLog.responseCode = 400;
+        infoLog.responseTime = libs.utils.getResponseTime(startTime);
+        libs.utils.getLog().error(infoLog, `getQuestionPoint: ${err.message}`);
+        const resObj = libs.utils.errorParse(400, `getQuestionPoint: ${err.message}`);
+        res.status(resObj.errorCode).send(resObj);
+    }
+}
+
+export function getQuestionPointsByUser(req, res) {
+    startTime = moment(new Date());
+
+    let dataValuesLog = new database.log({
+        uri: req.url,
+        clientIP: libs.utils.getClientIP(req)
+    });
+
+    let { dataValues } = dataValuesLog;
+    // eslint-disable-next-line no-unused-vars
+    let { id, ...infoLog } = dataValues;
+
+    infoLog.responseTime = libs.utils.getResponseTime(startTime);
+
+    libs.utils.getLog()
+        .debug(infoLog, "getQuestionPointByComic: Iniciando método GET.");
+
     const email = req.params.email;
 
     Points.findAll({
         where: {
-            email: email
+            email: email,
+            order: [
+                ['points', 'DESC']
+            ],
         }
     })
         .then(points => {
             if (points.length === 0) {
                 infoLog.responseCode = 404;
                 infoLog.responseTime = libs.utils.getResponseTime(startTime);
-                libs.utils.getLog().error(infoLog, "getQuestionPoint: Puntos no encontrados.");
+                libs.utils.getLog().error(infoLog, "getQuestionPointByComic: Puntos no encontrados.");
 
-                const resObj = libs.utils.errorParse(404, "getQuestionPoint: Puntos no encontrados.");
+                const resObj = libs.utils.errorParse(404, "getQuestionPointByComic: Puntos no encontrados.");
                 res.status(resObj.errorCode).send(resObj);
             } else {
                 infoLog.responseCode = 200;
                 infoLog.responseTime = libs.utils.getResponseTime(startTime);
-                libs.utils.getLog().info(infoLog, "getQuestionPoint: Puntos encontrados.");
+                libs.utils.getLog().info(infoLog, "getQuestionPointByComic: Puntos encontrados.");
 
-                res.status(200).send(points);
+                res.status(200).send(points[0]);
             }
         })
         .catch(err => {
             infoLog.responseCode = 400;
             infoLog.responseTime = libs.utils.getResponseTime(startTime);
-            libs.utils.getLog().error(infoLog, `getQuestionPoint: ${err.message}`);
+            libs.utils.getLog().error(infoLog, `getQuestionPointByComic: ${err.message}`);
 
-            const resObj = libs.utils.errorParse(400, `getQuestionPoint: ${err.message}`);
+            const resObj = libs.utils.errorParse(400, `getQuestionPointByComic: ${err.message}`);
             res.status(resObj.errorCode).send(resObj);
         });
 }

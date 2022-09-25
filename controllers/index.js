@@ -10,6 +10,7 @@ import {
     getQuestionFinByComicAndCharacterDinamic,
     postQuestionPoints,
     getQuestionPoints,
+    getQuestionPointsByUser
 } from "./question.controller.js";
 
 const controllers = {
@@ -37,7 +38,8 @@ const controllers = {
         deleteQuestion,
         getQuestionFinByComicAndCharacterDinamic,
         postQuestionPoints,
-        getQuestionPoints
+        getQuestionPoints,
+        getQuestionPointsByUser
     }
 }
 
