@@ -7,6 +7,7 @@ const Question = database.question;
 const Comic = database.comic;
 const Character = database.character;
 const Points = database.points;
+const User = database.user;
 
 let startTime;
 
@@ -467,8 +468,20 @@ export async function getQuestionPoints(req, res) {
                     },
                     order: [["createdAt", "DESC"]]
                 });
+
+                let userImageBase64 = await User.findOne({
+                    where: {
+                        email: point.email
+                    },
+                    attributes: ["imageBase64"]
+                });
+
                 if (point) {
-                    pointsArray.push(point);
+                    let pointObj = {
+                        ...point.dataValues,
+                        imageBase64: userImageBase64.imageBase64
+                    };
+                    pointsArray.push(pointObj);
                 }
             }
 
