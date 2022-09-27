@@ -1,3 +1,9 @@
+import database from '../models/index.js';
+import config from '../config/index.js';
+import moment from 'moment';
+import libs from '../libs/index.js'
+import bcrypt from 'bcryptjs';
+
 export function allAccess(req, res) {
     res.status(200).send({ mensage: 'Contenido Público.' });
 }
@@ -9,4 +15,128 @@ export function adminBoard(req, res) {
 }
 export function moderatorBoard(req, res) {
     res.status(200).send({ mensaje: 'Contenido de Moderador.' });
+}
+
+const User = database.user;
+let startTime;
+
+export async function updateUser(req, res) {
+    try {
+        startTime = moment(new Date());
+
+        let dataValuesLog = new database.log({
+            uri: req.url,
+            clientIP: libs.utils.getClientIP(req)
+        });
+
+        let { dataValues } = dataValuesLog;
+        // eslint-disable-next-line no-unused-vars
+        let { id, ...infoLog } = dataValues;
+
+        infoLog.responseTime = libs.utils.getResponseTime(startTime);
+
+        libs.utils.getLog()
+            .debug(infoLog, 'updateUser: Iniciando método POST.');
+
+        const { username } = req.params;
+
+        const { name, email, password, imageBase64 } = req.body;
+
+        if (name === undefined && email === undefined && password === undefined && imageBase64 === undefined) {
+            infoLog.responseCode = 404;
+            infoLog.responseTime = libs.utils.getResponseTime(startTime);
+            libs.utils.getLog().error(infoLog, 'updateUser: Parametros no validos.');
+
+            const resObj = libs.utils.errorParse(404, { message: "Parametros no validos." });
+            res.status(resObj.errorCode).send(resObj);
+            return;
+        }
+
+        const user = await User.findOne({
+            attributes: ['id', 'username', 'name', 'email', 'password', 'imageBase64'],
+            where: { username: username }
+        });
+
+        if (!user) {
+            infoLog.responseCode = 404;
+            infoLog.responseTime = libs.utils.getResponseTime(startTime);
+            libs.utils.getLog().error(infoLog, 'updateUser: Usuario no enocontrado.');
+
+            const resObj = libs.utils.errorParse(404, { message: "Usuario no enocontrado." });
+            res.status(resObj.errorCode).send(resObj);
+            return;
+        }
+
+        let validateUsernameAndEmail;
+
+        if (email) {
+            if (email !== user.email) {
+                validateUsernameAndEmail = await User.findAll({
+                    where: {
+                        [database.Sequelize.Op.or]: [
+                            { username: username },
+                            { email: email }
+                        ]
+                    }
+                });
+            }
+        }
+
+        if (validateUsernameAndEmail && validateUsernameAndEmail.length > 0) {
+            infoLog.responseCode = 400;
+            infoLog.responseTime = libs.utils.getResponseTime(startTime);
+            libs.utils.getLog().error(infoLog, 'updateUser: El nombre de usuario o el correo electrónico ya están en uso.');
+            const resObj = libs.utils.errorParse(400, { message: "El nombre de usuario o el correo electrónico ya están en uso." });
+            res.status(resObj.errorCode).send(resObj);
+            return;
+        } else {
+
+            let userUpdated = {};
+            if (email) {
+                userUpdated.username = email.split('@')[0];
+                userUpdated.email = email;
+            }
+            if (name) userUpdated.name = name;
+            if (password) userUpdated.password = bcrypt.hashSync(password, 8);
+            if (imageBase64) {
+                userUpdated.imageBase64 = imageBase64;
+            } else {
+                userUpdated.imageBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjY0cHgiIGhlaWdodD0iMjgwcHgiIHZpZXdCb3g9IjAgMCAyNjQgMjgwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZXNjPkNyZWF0ZWQgd2l0aCBnZXRhdmF0YWFhcnMuY29tPC9kZXNjPjxkZWZzPjxjaXJjbGUgaWQ9InJlYWN0LXBhdGgtMjczOTQyNyIgY3g9IjEyMCIgY3k9IjEyMCIgcj0iMTIwIj48L2NpcmNsZT48cGF0aCBkPSJNMTIsMTYwIEMxMiwyMjYuMjc0MTcgNjUuNzI1ODMsMjgwIDEzMiwyODAgQzE5OC4yNzQxNywyODAgMjUyLDIyNi4yNzQxNyAyNTIsMTYwIEwyN…g0MDc3MTksOC4xNzIzIDUxLjgwNzQzNDQsOS43MjM5NjY2NyA1My41MDgzMTM3LDEwLjQ1MDk2NjcgQzU1LjYyNjI0NTEsMTEuMzU2NjMzMyA1Ny41MTc0ODE0LDkuNzE0MyA1OS4yMTI2OTMzLDguODU1MyBDNjEuMzgwOTY0Myw3Ljc1NjYzMzMzIDY0LjcxMjA0NzMsNy44NzczIDY2LjcxODk2NDgsOC44NTUzIEM2OC40MjcxNzgzLDkuNjg3OTY2NjcgNzAuMzA1MDc5NywxMS4zNTY2MzMzIDcyLjQyMzM0NDQsMTAuNDUwOTY2NyBDNzQuMTI0MjIzNyw5LjcyMzk2NjY3IDc0LjA5MDg4NjIsOC4xNzIzIDczLjEwOTQzMDIsNy4wMTI2MzMzMyIgaWQ9IkZyYW1lLVN0dWZmIj48L3BhdGg+PC9nPjwvZz48L2c+PC9nPjwvZz48L2c+PC9nPjwvZz48L2c+PC9zdmc+'; // Default image
+            }
+
+            const updateUser = await User.update(userUpdated, {
+                where: { username: username }
+            });
+
+            const userUpdatedResponse = await User.findOne({
+                attributes: ['username', 'name', 'email', 'imageBase64'],
+                where: { username: username }
+            });
+
+            infoLog.responseCode = 200;
+            infoLog.responseTime = libs.utils.getResponseTime(startTime);
+            libs.utils.getLog().info(infoLog, 'updateUser: Responde exitosamente.');
+
+            res.send({ message: 'Usuario actualizado correctamente', updateUser, userUpdatedResponse });
+        }
+    } catch (error) {
+        startTime = moment(new Date());
+
+        let dataValuesLog = new database.log({
+            uri: req.url,
+            clientIP: libs.utils.getClientIP(req)
+        });
+
+        let { dataValues } = dataValuesLog;
+        // eslint-disable-next-line no-unused-vars
+        let { id, ...infoLog } = dataValues;
+
+        infoLog.responseTime = libs.utils.getResponseTime(startTime);
+        infoLog.responseCode = 400;
+        infoLog.responseTime = libs.utils.getResponseTime(startTime);
+        libs.utils.getLog().error(infoLog, 'updateUser: El nombre de usuario o el correo electrónico ya están en uso.');
+        const resObj = libs.utils.errorParse(400, { message: "El nombre de usuario o el correo electrónico ya están en uso." });
+        res.status(resObj.errorCode).send(resObj);
+        return;
+    }
 }

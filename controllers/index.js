@@ -1,5 +1,5 @@
 import { signup, signin } from "./auth.controller.js";
-import { allAccess, userBoard, adminBoard, moderatorBoard } from "./user.controller.js";
+import { allAccess, userBoard, adminBoard, moderatorBoard, updateUser } from "./user.controller.js";
 import { comicList, comics, search, characters } from './apiMarvel.controller.js';
 import {
     getQuestion,
@@ -22,7 +22,8 @@ const controllers = {
         allAccess,
         userBoard,
         adminBoard,
-        moderatorBoard
+        moderatorBoard,
+        updateUser
     },
     apiMarvel: {
         comics,

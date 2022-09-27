@@ -33,5 +33,10 @@ router.get(
     controllers.user.adminBoard
 );
 
+router.put(
+    "/updateUser/:username",
+    [verifyToken],
+    controllers.user.updateUser
+);
 
 export default router;

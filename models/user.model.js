@@ -16,6 +16,9 @@ export default (sequelize, Sequelize) => {
         },
         password: {
             type: Sequelize.STRING
+        },
+        imageBase64: {
+            type: Sequelize.STRING(1000000)
         }
     });
     return User;
