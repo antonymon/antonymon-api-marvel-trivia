@@ -17,7 +17,7 @@ const morganFormat = process.env.NODE_ENV == 'prod' ? 'common' : 'dev';
 app.use(morgan(morganFormat));
 
 
-app.use(express.json());
+//app.use(express.json());
 
 const whitelist = ['http://localhost:3000', 'https://app.com'];
 
@@ -32,8 +32,12 @@ const options = {
 }
 app.use(cors(options));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 
 const dataValuesLog = new database.log();
 
